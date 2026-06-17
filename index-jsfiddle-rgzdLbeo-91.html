@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mapa de Chile: PFV, Empresas y Eólicos</title>
+
+  <style>
+    #map {
+    width: 100%;
+    height: 500px;
+}body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            width: 100vw;
+            height: 100vh; /* Ocupa el 100% de la pantalla */
+        }
+  </style>
+
+  
+</head>
+<body>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    📍 Latitud: -22.4563
+📍 Longitud: -68.9297 calama
+
+  <script>
+    // ==========================================
+// MAPA CHILE PFV - EMPRESAS - EÓLICOS
+// ==========================================
+
+// Crear mapa
+var map = L.map('map').setView([-31.5000, -71.5000], 5);
+
+// Mapa base OpenStreetMap
+var mapaBase = L.tileLayer(
+  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    maxZoom: 19,
+    attribution:
+      '&copy; OpenStreetMap Contributors'
+  }
+).addTo(map);
+
+// ==========================================
+// CAPAS
+// ==========================================
+
+var grupoPFV = L.layerGroup();
+var grupoEmpresas = L.layerGroup();
+var grupoEolicos = L.layerGroup();
+
+// ==========================================
+// ICONO SOLAR AMARILLO
+// ==========================================
+
+var iconoSolar = L.icon({
+  iconUrl:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+  shadowUrl:
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// ==========================================
+// PFV REALES
+// ==========================================
+
+function copiarDireccion(direccion) {
+
+  if (!direccion) {
+    alert("No hay dirección registrada");
+    return;
+  }
+
+  navigator.clipboard.writeText(direccion);
+
+  alert("Dirección copiada correctamente");
+}
+
+const parquesPFV = [
+
+ 
+  {
+  empresa: "Sonnedix",
+
+  parque: "San Juan I",
+
+  direccion: "Camino cobija sin numero cruce con pje la Laguna",
+
+  comisaria: "5ºCuadrante de Calama",
+  telComisaria: "55-2755224",
+
+  bomberos: "Cuerpo de Bomberos de Calama",
+  telBomberos: "552313547",
+
+  lat: -22.477756844688518,  
+  lng: -68.97580881463193
+
+},
+
+  {
+  empresa: "Sonnedix",
+
+  parque: "Don Pedro",
+
+  direccion: "Las Américas (1.74 km desde la quebrada Monte Patria hacia el Cerro Guayaquil) Provincia de Limarí, Región de Coquimbo",
+
+  comisaria: "Carabineros Monte Patria)",
+  telComisaria: "53245 3051,Cenco Ovalle,53243193",
+
+  bomberos: "Bomberos El Palqui ",
+  telBomberos: "53 271 1012 ",
+
+  lat: -30.673098828975622,  
+  lng: -70.9444139421796
+},
+
+ {
+  empresa: "Sonnedix",
+
+  parque: "El Arrayán",
+
+  direccion: "Hacienda El Arrayán",
+
+  comisaria: "Tenencia Limarí",
+  telComisaria: "(53) 2453081",
+
+  bomberos: "Bomberos de Punitaqui",
+  telBomberos: "(53) 2731017",
+
+  lat: -30.5619281,
+  lng: -71.6902381
+},
+
+  {
+  empresa: "Solarity",
+
+  parque: "Santa Carolina",
+
+  direccion: "Ruta F-90, Casablanca",
+
+  comisaria: "5ª Comisaría Casablanca",
+  telComisaria: "+56 32 2741234",
+
+  bomberos: "Primera Compañía de Bomberos Casablanca",
+  telBomberos: "+56 32 2745678",
+
+  lat: -33.2943884,
+  lng: -71.4108910
+},
+  {
+    empresa: "Solarity",
+    parque: "Los Portones",
+    lat: -34.2650100,
+    lng: -70.8264690
+  }
+
+];
+
+// Dibujar PFV
+
+parquesPFV.forEach(function (p) {
+
+  L.marker(
+    [p.lat, p.lng],
+    { icon: iconoSolar }
+  )
+  .bindPopup(`
+    <h3>${p.parque}</h3>
+
+    <b>🏢 Empresa:</b><br>
+    ${p.empresa}<br><br>
+
+    <b>📍 Dirección:</b><br>
+    ${p.direccion || "No registrada"}<br><br>
+
+    <b>🚔 Comisaría:</b><br>
+    ${p.comisaria || "No registrada"}<br>
+    ${p.telComisaria || ""}<br><br>
+
+    <b>🚒 Bomberos:</b><br>
+    ${p.bomberos || "No registrados"}<br>
+    ${p.telBomberos || ""}<br><br>
+
+    <button onclick="copiarDireccion('${p.direccion || ""}')">
+      📋 Copiar dirección
+    </button>
+
+    <br><br>
+
+    <a href="https://www.google.com/maps?q=${p.lat},${p.lng}"
+       target="_blank">
+       🗺️ Abrir en Google Maps
+    </a>
+  `)
+  .addTo(grupoPFV);
+
+});
+
+// ==========================================
+// EMPRESAS
+// ==========================================
+
+L.marker([-33.4372, -70.6506])
+  .bindPopup(
+    "<b>Casa Matriz Principal</b><br>Santiago Centro"
+  )
+  .addTo(grupoEmpresas);
+
+L.marker([-33.4341385, -70.6155345])
+  .bindPopup(
+    "<b>Oficina Comercial</b><br>Antonio Varas 751"
+  )
+  .addTo(grupoEmpresas);
+
+L.marker([-33.0472, -71.6127])
+  .bindPopup(
+    "<b>Sucursal Puerto Valparaíso</b>"
+  )
+  .addTo(grupoEmpresas);
+
+L.marker([-36.8261, -73.0498])
+  .bindPopup(
+    "<b>Centro Distribución Concepción</b>"
+  )
+  .addTo(grupoEmpresas);
+
+// ==========================================
+// PARQUES EÓLICOS
+// ==========================================
+
+L.circle(
+  [-30.5619281, -71.6902381],
+  {
+    color: 'green',
+    fillColor: '#22cc22',
+    fillOpacity: 0.6,
+    radius: 5000
+  }
+)
+.bindPopup(
+  "<b>Parque Eólico El Arrayán</b>"
+)
+.addTo(grupoEolicos);
+
+L.circle(
+  [-37.4697, -72.3535],
+  {
+    color: 'green',
+    fillColor: '#22cc22',
+    fillOpacity: 0.6,
+    radius: 5000
+  }
+)
+.bindPopup(
+  "<b>Parque Eólico Biobío</b>"
+)
+.addTo(grupoEolicos);
+
+// ==========================================
+// ACTIVAR CAPAS
+// ==========================================
+
+grupoPFV.addTo(map);
+grupoEmpresas.addTo(map);
+grupoEolicos.addTo(map);
+
+// ==========================================
+// CONTROL DE CAPAS
+// ==========================================
+
+var mapasBaseDisponibles = {
+  "Vista Mapa": mapaBase
+};
+
+var filtrosCapas = {
+  "PFV (Plantas Solares)": grupoPFV,
+  "EMPRESAS": grupoEmpresas,
+  "EÓLICOS (Parques Eólicos)": grupoEolicos
+};
+
+L.control.layers(
+  mapasBaseDisponibles,
+  filtrosCapas,
+  {
+    collapsed: false
+  }
+).addTo(map);
+
+// ==========================================
+// CAPTURADOR DE COORDENADAS
+// ==========================================
+
+var clickPopup = L.popup();
+
+function onMapClick(e) {
+
+  var lat = e.latlng.lat.toFixed(6);
+  var lng = e.latlng.lng.toFixed(6);
+
+  clickPopup
+    .setLatLng(e.latlng)
+    .setContent(
+      "<b>Coordenadas:</b><br><code>[" +
+      lat +
+      ", " +
+      lng +
+      "]</code>"
+    )
+    .openOn(map);
+}
+
+map.on('click', onMapClick);
+  </script>
+</body>
+</html>
